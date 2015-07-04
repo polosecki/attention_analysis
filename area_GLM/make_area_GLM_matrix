@@ -1,0 +1,47 @@
+close all; clear all
+monkey='Quincy';
+area='PITd';
+
+%align=1; %1:align to surf onset; 2:align to saccade onset
+cell_file_dir='/Freiwald/ppolosecki/lspace/polo_preliminary/cell_file_manager';
+base_dir='/Freiwald/ppolosecki/lspace';
+
+cell_file=fullfile(cell_file_dir,[area '_' monkey '.mat']);
+results_file=fullfile(cell_file_dir,[area '_' monkey '_results.mat']);
+load(cell_file);
+good_files=true(length(cell_str),1);
+
+if strcmp(monkey,'Quincy') && strcmp(area,'PITd')
+    good_files([4 8 22 23 24 32 33 42:46 52])=false;
+    load ../dPCA/PITd_Quincy_dpca_input.mat    
+elseif strcmp(monkey,'Quincy') && strcmp(area,'LIP')
+    good_files([2 12:14 17 26])=false;
+    load ../dPCA/LIP_Quincy_dpca_input.mat
+elseif strcmp(monkey,'Michel') && strcmp(area,'LIP')
+    good_files([1 2 4 5 21 31 32 33])=0; % cell 1 removed beause it is a copy of cell 12
+    load ../dPCA/LIP_Michel_dpca_input.mat
+    base_dir='/Freiwald/ppolosecki/lspace/sara';
+elseif strcmp(monkey,'Michel') && strcmp(area,'PITd')
+    good_files([6 10:12 16 19 32 38 40 48])=0;
+    load ../dPCA/PITd_Michel_dpca_input.mat
+end
+
+max_align=2;
+
+for align=1:max_align
+    flat_mean_data{align}.matrix=nan(size(dpca_input{align},1)*size(dpca_input{align},3)*size(dpca_input{align},4),size(dpca_input{align},2));
+    flat_mean_data{align}.cell_no=nan(size(dpca_input{align},1)*size(dpca_input{align},3)*size(dpca_input{align},4),1);
+    flat_mean_data{align}.attn=nan(size(dpca_input{align},1)*size(dpca_input{align},3)*size(dpca_input{align},4),1);
+    flat_mean_data{align}.sacc=nan(size(dpca_input{align},1)*size(dpca_input{align},3)*size(dpca_input{align},4),1);
+    for cell_idx=1:size(dpca_input{align},1)
+        for attn_idx=1:size(dpca_input{align},3)
+            for sacc_idx=1:size(dpca_input{align},4)
+                row_used=sacc_idx+size(dpca_input{align},4)*(attn_idx-1)+size(dpca_input{align},4)*size(dpca_input{align},3)*(cell_idx-1);
+                flat_mean_data{align}.matrix(row_used,:)=squeeze(dpca_input{align}(cell_idx,:,attn_idx,sacc_idx));
+                flat_mean_data{align}.cell_no(row_used)=cell_idx;
+                flat_mean_data{align}.attn(row_used)=attn_idx;
+                flat_mean_data{align}.sacc(row_used)=sacc_idx;
+            end
+        end
+    end
+end
