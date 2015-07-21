@@ -1,4 +1,4 @@
-function [results]=make_GLM_fun(cell_no,monkey,area,operation_mode,z_score_data,use_BRTs)
+function [results]=make_GLM_fun(cell_no,monkey,area,operation_mode,z_score_data,use_BRTs,noise_type)
 
 %Inputs: cell_no: cell number in data base
 %         monkey: monkey name
@@ -7,10 +7,16 @@ function [results]=make_GLM_fun(cell_no,monkey,area,operation_mode,z_score_data,
 %                         'fixed_points' for just fixed set of time points (for histogram of population)
 %                         'betas_for_pca' for high temporal resolution and
 %                         no plot
+%         z_score: set to 1 to normalize data
+%         use_BRT: include BRT-centerered activity in results
+%         noisetype: 'normal' or 'poisson'
 
 %cell_no=28;%PITd; %28;% LIP;
 if nargin<6
 use_BRTs=1;
+end
+if nargin<7
+    noise_type='normal';
 end
 
 base_dir='/Freiwald/ppolosecki/lspace';
@@ -154,12 +160,13 @@ for mat_used=1:num_matrices
 
      y=(y-mean_center)/std_scale;
  
-    [temp]= make_GLM_and_contrasts_from_inst_firing(y,RF_surf(cell_no),surf_str);
+    [temp]= make_GLM_and_contrasts_from_inst_firing(y,RF_surf(cell_no),surf_str,noise_type);
     results{mat_used}=temp; clear temp;
     results{mat_used}.time=tbins_center;
     results{mat_used}.y=y;
     results{mat_used}.mean_activity=mean_center;
     results{mat_used}.std_activity=std_scale;
+    results{mat_used}.noise_model=noise_type;
 end
 %% Make plots
 switch operation_mode
