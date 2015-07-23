@@ -13,7 +13,7 @@ function [results]=make_GLM_fun(cell_no,monkey,area,operation_mode,z_score_data,
 
 %cell_no=28;%PITd; %28;% LIP;
 if nargin<6
-use_BRTs=1;
+    use_BRTs=1;
 end
 if nargin<7
     noise_type='normal';
@@ -30,11 +30,11 @@ cell_file=fullfile(cell_file_dir,[area '_' monkey '.mat']);
 results_file=fullfile(cell_file_dir,[area '_' monkey '_results.mat']);
 
 fixed_time_bins={[0.1 1.2 -0.5]; %stim-onset; mid-trial; pre-stim
-                 [-0.65 -.1]; %one seclong before saccade onset
-                 []}; %
+    [-0.65 -.1]; %one seclong before saccade onset
+    []}; %
 fixed_time_semiwidths={[0.2 0.2 0.2]; %stim-onset; mid-trial; pre-stim
-                 [0.15 .1]; %one seclong before saccade onset
-                 []}; % 
+    [0.15 .1]; %one seclong before saccade onset
+    []}; %
 
 %% Load basic files
 
@@ -109,22 +109,22 @@ else
     mean_center=0;
     std_scale=1;
 end
- 
+
 for mat_used=1:num_matrices
     
-%    tres = 1e9/30000; % Specified in nanoseconds, reciprocal of sample rate
-%    
-%     % Define time:
-%     t = 0:tres*grand_psth.psthdec/1e9:(size(grand_psth.matrix{mat_used},2)-1)*tres*grand_psth.psthdec/1e9;
-%     if mat_used==1
-%         %Center on surface onset(stmulus onset+pause_duration):
-%         t_zero=-grand_psth.start_trig(mat_used).offset+unique(surf_str_extra.pausedur(grand_psth.trials_used{mat_used}));
-%     elseif mat_used==2
-%         %Center on saccade onset:
-%         t_zero=t(end)-grand_psth.end_trig(mat_used).offset;
-%     end;
-%     t=t-t_zero;
-
+    %    tres = 1e9/30000; % Specified in nanoseconds, reciprocal of sample rate
+    %
+    %     % Define time:
+    %     t = 0:tres*grand_psth.psthdec/1e9:(size(grand_psth.matrix{mat_used},2)-1)*tres*grand_psth.psthdec/1e9;
+    %     if mat_used==1
+    %         %Center on surface onset(stmulus onset+pause_duration):
+    %         t_zero=-grand_psth.start_trig(mat_used).offset+unique(surf_str_extra.pausedur(grand_psth.trials_used{mat_used}));
+    %     elseif mat_used==2
+    %         %Center on saccade onset:
+    %         t_zero=t(end)-grand_psth.end_trig(mat_used).offset;
+    %     end;
+    %     t=t-t_zero;
+    
     t=grand_psth.time_axis{mat_used};
     %trial_count=sum(~isnan(grand_psth.matrix{mat_used}),1);
     %times_used=trial_count>15;
@@ -148,7 +148,7 @@ for mat_used=1:num_matrices
     y=nan(size(grand_psth.matrix{mat_used},1),length(tbins_center));
     switch operation_mode
         case 'fixed_points'
-             for i=1:length(tbins_center)
+            for i=1:length(tbins_center)
                 y(:,i)=nanmean(grand_psth.matrix{mat_used}(:,abs(t-tbins_center(i))<=tbins_semi_width(i)),2);
             end
         otherwise
@@ -156,13 +156,18 @@ for mat_used=1:num_matrices
                 y(:,i)=nanmean(grand_psth.matrix{mat_used}(:,abs(t-tbins_center(i))<=tbins_semi_width),2);
             end
     end
-
-
-     y=(y-mean_center)/std_scale;
- 
-    [temp]= make_GLM_and_contrasts_from_inst_firing(y,RF_surf(cell_no),surf_str,noise_type);
+    
+    switch noise_type
+        case 'normal'
+            y=(y-mean_center)/std_scale;
+    end
+    [temp]= make_GLM_and_contrasts_from_inst_firing(y,RF_surf(cell_no),surf_str,noise_type,mean_center,std_scale);
     results{mat_used}=temp; clear temp;
     results{mat_used}.time=tbins_center;
+    switch noise_type
+        case 'poisson'
+            y=(y-mean_center)/std_scale;
+    end
     results{mat_used}.y=y;
     results{mat_used}.mean_activity=mean_center;
     results{mat_used}.std_activity=std_scale;
@@ -171,19 +176,26 @@ end
 %% Make plots
 switch operation_mode
     case 'time_course'
-        contrasts_plotted={logical([1 1 0 0 0 0 1 0 0 1]);
-                           logical([0 0 0 0 1 0 1 1 0 0 1]);
-                           logical([0 0 0 0 0 0])};
+%         switch noise_type
+%             case 'normal'
+%                 contrasts_plotted={logical([1 1 0 0 0 0 1 0 0 1]);
+%                     logical([0 0 0 0 1 0 1 1 0 0 1]);
+%                     logical([0 0 0 0 0 0])};
+%             case 'poisson'
+                 contrasts_plotted={logical([0 0 0 0 0 0 0 0 0 0]);
+                     logical([0 0 0 0 0 0 0 0 0]);
+                     logical([1 1 1 0 1 0 0 1 1 0 1 0 1 0 0 0])};
+%          end
         plot_GLM_contrasts(results,contrasts_plotted,use_BRTs,cell_str,cell_no);
     case 'betas_for_pca'
-%         contrasts_plotted={logical([0 0 0 0 0 0 0 0 0 0]);
-%                            logical([0 0 0 0 0 0 0 0 0]);
-%                            logical([1 1 1 0 1 0 0 0 0 0 1 0 0 0 0 0])};
-
+        %         contrasts_plotted={logical([0 0 0 0 0 0 0 0 0 0]);
+        %                            logical([0 0 0 0 0 0 0 0 0]);
+        %                            logical([1 1 1 0 1 0 0 0 0 0 1 0 0 0 0 0])};
+        
         contrasts_plotted={logical([1 1 0 0 0 0 1 0 0 1]);
-                           logical([0 0 0 0 1 0 1 1 0 0 1]);
-                           logical([0 0 0 0 0 0])};
-                      % plot_GLM_contrasts(results,contrasts_plotted,use_BRTs,cell_str,cell_no);
+            logical([0 0 0 0 1 0 1 1 0 0 1]);
+            logical([0 0 0 0 0 0])};
+        % plot_GLM_contrasts(results,contrasts_plotted,use_BRTs,cell_str,cell_no);
 end
 
 

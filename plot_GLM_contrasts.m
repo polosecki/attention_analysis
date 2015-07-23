@@ -11,7 +11,7 @@ else
     subplot_column_used=[1 2];
 end
 
-show_legends=0;
+show_legends=1;
 f=figure;
 set(f,'Position',get(0,'ScreenSize'));
 lims_used=zeros(num_matrices,2);
@@ -21,6 +21,13 @@ colors_used=distinguishable_colors(sum(contrasts_plotted{1})+sum(contrasts_plott
 colors_used(4:end,:)=circshift(colors_used(4:end,:),[1 0]);
 %colors_used=distinguishable_colors(6);
 %colors_used=colors_used([1 2 6 4 3 5],:);
+if all(find(cellfun(@sum,contrasts_plotted))==3)
+    colors_used=colors_used([1 2 7 5 4 8 3 6],:);
+elseif any(find(cellfun(@sum,contrasts_plotted))==1)
+    colors_used=colors_used([7 5 1 2 4 8 3 6],:);
+end
+
+
 for mat_used=1:num_matrices
     subplot(1,num_matrices,subplot_column_used(mat_used)); hold on
         %pbaspect([207 107 1])
@@ -65,6 +72,7 @@ for mat_used=1:num_matrices
         lg=legend(linehandles,{results{1}.GLM(1).contrast.name{contrasts_plotted{1}} results{1}.GLM(2).contrast.name{contrasts_plotted{2}} results{1}.GLM(3).contrast.name{contrasts_plotted{3}}});
         set(lg,'Location','SouthWest');
         set(lg,'Box','off')
+        set(lg,'Interpreter','none')
         %         set(lg,'units','pixels');
         %         lp=get(lg,'outerposition');
         %         set(lg,'outerposition',[lp(1:2),50,lp(4)]);
