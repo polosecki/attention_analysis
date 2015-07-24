@@ -1,5 +1,7 @@
-function [timing]= measure_timing_of_effects_fun(monkey,area,use_high_res_data)
-
+function [timing]= measure_timing_of_effects_fun(monkey,area,use_high_res_data,noise_model)
+if nargin<4
+    noise_model='poisson';
+end
 
 %max_align=3; %set to 3 if BRT aligned stuff exists %1:align to surf onset; 2:align to saccade onset
 cell_file_dir='/Freiwald/ppolosecki/lspace/polo_preliminary/cell_file_manager';
@@ -15,9 +17,9 @@ addpath('..')
 
 tic
 if use_high_res_data
-    load(fullfile(base_dir,'polo_preliminary','attention_analysis','population_GLM',[area '_' monkey '_highres_GLMs.mat']))
+    load(fullfile(base_dir,'polo_preliminary','attention_analysis','population_GLM',[area '_' monkey '_' noise_model '_highres_GLMs.mat']))
 else
-    load(fullfile(base_dir,'polo_preliminary','attention_analysis','population_GLM',[area '_' monkey '_GLMs.mat']))
+    load(fullfile(base_dir,'polo_preliminary','attention_analysis','population_GLM',[area '_' monkey '_' noise_model '_GLMs.mat']))
 end
 toc
 
@@ -44,8 +46,8 @@ for raw_cell_no=1:length(attention_long_enough)
     if ~ismember(raw_cell_no,bad_files(monkey,area))
     cell_no=raw_cell_no-sum(bad_files(monkey,area)<raw_cell_no);
         %attn_sig=all_cell_results{cell_no,1}.GLM(1).Fsig(4,:);
-        attn_sig=all_cell_results{cell_no,1}.GLM(2).Fsig(8,:);
-        
+        %attn_sig=all_cell_results{cell_no,1}.GLM(2).Fsig(8,:);
+        attn_sig=all_cell_results{cell_no,1}.GLM(1).Fsig(1,:);
         t=all_cell_results{cell_no,1}.time;
         [t0,t0_ind]=min(abs(t-0.03));
         t0=t(t0_ind);p_thres=0.05;
@@ -98,7 +100,8 @@ for raw_cell_no=1:length(attention_long_enough)
         
         % Measure timing of saccade tuning:
         
-        sacc_sig=all_cell_results{cell_no,2}.GLM(2).Fsig(5,:);
+%        sacc_sig=all_cell_results{cell_no,2}.GLM(2).Fsig(5,:);
+        sacc_sig=all_cell_results{cell_no,2}.GLM(2).Fsig(2,:);
         t=all_cell_results{cell_no,2}.time;
         [t0,t0_ind]=min(abs(t+0.05));
         t0=t(t0_ind);

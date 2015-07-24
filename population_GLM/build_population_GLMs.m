@@ -3,30 +3,31 @@ clear all; close all
 %monkeys={'Quincy','Michel'}
 %for mm=1:length(monkey)
 %    for aa=1:length(area);
-area='PITd';%areas{aa};
-monkey='Quincy';%'Quincy';%'both';%'Michel';%monkeys{mm};%'Quincy';
+area='LIP';%areas{aa};
+monkey='Michel';%'Quincy';%'both';%'Michel';%monkeys{mm};%'Quincy';
+noise_model='poisson';
 remake_GLMs=0;
 save_fig=0;
-use_highres_data=0; % TIME-CONSUMING!!!
+use_highres_data=1; % TIME-CONSUMING!!!
 use_BRTs=1;
 use_BRTs_in_plot=0;
 
 
 if use_highres_data
-    file_suffix='_highres_GLMs.mat';
+    file_suffix= '_highres_GLMs.mat';
 else
     file_suffix='_GLMs.mat';
 end
 
 if ~strcmp(monkey,'both')
-    if ~exist([area '_' monkey file_suffix],'file') | remake_GLMs
-        save_many_GLMs(monkey,area,0)
+    if ~exist([area '_' monkey '_' noise_model file_suffix],'file') | remake_GLMs
+        save_many_GLMs(monkey,area,use_highres_data,noise_model)
     end
-    load([area '_' monkey file_suffix])
+    load([area '_' monkey '_' noise_model file_suffix])
 else
-    load([area '_Quincy' file_suffix]);
+    load([area '_Quincy_' noise_model file_suffix]);
     temp=all_cell_results;
-    load([area '_Michel' file_suffix]);
+    load([area '_Michel_' noise_model file_suffix]);
     all_cell_results=[temp; all_cell_results];
     clear temp
 end
@@ -99,12 +100,12 @@ end
 make_common_plot=1;
 for_paper=0;
 if make_common_plot
-%     contrasts_plotted={logical([0 0 0 0 0 0 0 0 0 0]);
-%         logical([0 0 0 0 0 0 0 0 0]);
-%         logical([1 1 1 0 1 0 0 1 1 0 1 0 1 0 0 0])};
-    contrasts_plotted={logical([1 0 0 0]);
-        logical([0 1 0 0]);
-        logical([1 1 0 0 0 0 0 1 1 0 1 0 1 0 0 0])};
+    contrasts_plotted={logical([0 0 0 0 0 0 0 0 0 0]);
+        logical([0 0 0 0 0 0 0 0 0]);
+        logical([1 1 1 0 1 0 0 1 1 0 1 0 1 0 0 0])};
+%     contrasts_plotted={logical([1 0 0 0]);
+%         logical([0 1 0 0]);
+%         logical([1 1 0 0 0 0 0 1 1 0 1 0 1 0 0 0])};
     if ~for_paper
         h=plot_GLM_contrasts(norm_group,contrasts_plotted,use_BRTs_in_plot);
     else

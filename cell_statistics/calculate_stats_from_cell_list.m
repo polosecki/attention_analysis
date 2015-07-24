@@ -47,15 +47,23 @@ end
 
 
 %parameters of interest
-params=[1 4 1; %attn: GLM1,4thcontrast,time_point1
-        1 2 1; %target
-        1 7 1; %attn/target inter
-        2 5 2; %saccade
-        2 7 2; %saccade/attn inter
-        1 1 1; %surface
-        1 10 1; %surface/target inter
-        2 11 1]; %saccade/surface interaction        
+% params=[1 4 1; %attn: GLM1,4thcontrast,time_point1
+%         1 2 1; %target
+%         1 7 1; %attn/target inter
+%         2 5 2; %saccade
+%         2 7 2; %saccade/attn inter
+%         1 1 1; %surface
+%         1 10 1; %surface/target inter
+%         2 11 1]; %saccade/surface interaction
     
+params=[3 3 1; %attn: GLM3,3rdcontrast,time_point1
+        3 2 1; %target
+        3 11 1; %attn/target inter
+        3 5 2; %saccade
+        3 13 2; %saccade/attn inter
+        3 1 1; %surface
+        3 8 1; %surface/target inter
+        3 9 1]; %saccade/surface interaction     
 param_names={'attention';
              'target';
              'attn/target inter';
