@@ -1,4 +1,4 @@
-function [cell_ces, cell_sig, param_names]=calculate_stats_from_cell_list(monkey,area)
+function [cell_ces, cell_sig, param_names]=calculate_stats_from_cell_list(monkey,area,'noise_model')
 
 cell_file_dir='/Freiwald/ppolosecki/lspace/polo_preliminary/cell_file_manager';
 cell_file=fullfile(cell_file_dir,[area '_' monkey '.mat']);
@@ -17,7 +17,7 @@ good_files(bad_files(monkey,area))=false;
 
 for cell_no=1:length(cell_str)
     if good_files(cell_no)
-        [results]=make_GLM_fun(cell_no,monkey,area,'fixed_points',1,0);
+        [results]=make_GLM_fun(cell_no,monkey,area,'fixed_points',1,0,noise_model);
         %[results]=make_GLM_fun(cell_no,monkey,area,'betas_for_pca',1,0);
         if ~isempty(cell_str(cell_no).MGS_file.mat)
             wd=pwd;

@@ -8,12 +8,12 @@ use_mean_firing=0;
 remove_mgs_saccade_epoch=1; %This might be desirable, since we already have its difference with mem epoch as a variable 
 save_figures_to_harbor=0;
 figure_dir='/Freiwald/ppolosecki/harbor';
-
+noise_model='poisson';
 %% Make or load statistics for each area and monkey
 if redo_stats
     for mm=1:length(monkey)
         for aa=1:length(area)
-            [cell_ces, cell_sig, param_names]=calculate_stats_from_cell_list(monkey{mm},area{aa});
+            [cell_ces, cell_sig, param_names]=calculate_stats_from_cell_list(monkey{mm},area{aa},noise_model);
             [timing]= measure_timing_of_effects_fun(monkey{mm},area{aa},use_high_res_data);
             [RT_data]= get_RT_from_cell_list(monkey{mm},area{aa});
             full_stats(aa,mm).ces=cell_ces;
