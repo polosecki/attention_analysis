@@ -3,13 +3,14 @@ monkey={'Quincy','Michel'};
 area={'PITd','LIP'};
 
 use_high_res_data=1;
-redo_stats=0;
+redo_stats=1;
 use_mean_firing=0;
 remove_mgs_saccade_epoch=1; %This might be desirable, since we already have its difference with mem epoch as a variable 
 save_figures_to_harbor=0;
 figure_dir='/Freiwald/ppolosecki/harbor';
 noise_model='poisson';
 %% Make or load statistics for each area and monkey
+addpath('../')
 if redo_stats
     for mm=1:length(monkey)
         for aa=1:length(area)

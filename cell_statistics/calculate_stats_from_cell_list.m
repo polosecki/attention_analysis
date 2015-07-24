@@ -1,4 +1,4 @@
-function [cell_ces, cell_sig, param_names]=calculate_stats_from_cell_list(monkey,area,'noise_model')
+function [cell_ces, cell_sig, param_names]=calculate_stats_from_cell_list(monkey,area,noise_model)
 
 cell_file_dir='/Freiwald/ppolosecki/lspace/polo_preliminary/cell_file_manager';
 cell_file=fullfile(cell_file_dir,[area '_' monkey '.mat']);
@@ -23,7 +23,7 @@ for cell_no=1:length(cell_str)
             wd=pwd;
             cd ('../../mgs_analysis')
             %[results_mgs]=make_GLM_mgs_fun(cell_no,monkey,area,'betas_for_pca',1);
-            [results_mgs]=make_GLM_mgs_fun(cell_no,monkey,area,'fixed_points',1,1);
+            [results_mgs]=make_GLM_mgs_fun(cell_no,monkey,area,'fixed_points',1,1,noise_model);
             cd(wd)
             %cell_results_collection_mgs(cell_no,1:2)=[results_mgs{1}.GLM results_mgs{2}.GLM];
             cell_results_collection_mgs(cell_no,1:3)=[results_mgs{1}.GLM results_mgs{2}(1).GLM results_mgs{2}(2).GLM];
