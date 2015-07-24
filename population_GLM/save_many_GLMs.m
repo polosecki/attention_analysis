@@ -1,7 +1,11 @@
-function save_many_GLMs(monkey,area,is_highres_GLM)
+function save_many_GLMs(monkey,area,is_highres_GLM,noise_model)
 if nargin<3
     is_highres_GLM=0;
 end
+if nargin<4
+    noise_model='poisson';
+end
+
 cell_file_dir='/Freiwald/ppolosecki/lspace/polo_preliminary/cell_file_manager';
 %monkey='Quincy';
 %area='PITd'; %'PITd';
@@ -19,9 +23,9 @@ for cell_no=1:length(cell_str)
         %[results_single]=make_GLM_fun(cell_no,monkey,area,'fixed_points');
         %[results_single]=make_GLM_fun(cell_no,monkey,area,'time_course',1,1);
         if is_highres_GLM
-        [results_single]=make_GLM_fun(cell_no,monkey,area,'betas_for_pca',1,1);
+        [results_single]=make_GLM_fun(cell_no,monkey,area,'betas_for_pca',1,1,noise_model);
         else
-        [results_single]=make_GLM_fun(cell_no,monkey,area,'time_course',1,1); 
+        [results_single]=make_GLM_fun(cell_no,monkey,area,'time_course',1,1,noise_model); 
         end        
         close(gcf)
         drawnow
@@ -36,8 +40,8 @@ end
 
 %save([area '_' monkey '_GLMs.mat'],'all_cell_results')
 if is_highres_GLM
-save([area '_' monkey '_highres_GLMs.mat'],'all_cell_results','-v7.3')
+save([area '_' monkey '_' noise_model '_highres_GLMs.mat'],'all_cell_results','-v7.3')
 else
-save([area '_' monkey '_GLMs.mat'],'all_cell_results')
+save([area '_' monkey '_' noise_model '_GLMs.mat'],'all_cell_results')
 end
 %%

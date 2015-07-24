@@ -134,10 +134,10 @@ for used_mat=1:3
     rx=rank(X);
     disp(['GLM(' num2str(used_mat) ')'])
     for i=1:size(y,2)
-        %    disp(['GLM(' num2str(used_mat) ') ' num2str(i)])
+           disp(['GLM(' num2str(used_mat) ') ' num2str(i)])
         temp_y=y(:,i);
         tt=trials_used{used_mat} & ~isnan(temp_y);
-        if rank(X(tt,:)'*X(tt,:))<rx
+        if rank(X(tt,:))<rx
             continue
         end
         [b,dev,stats] = glmfit(X(tt,:),temp_y(tt),noise_type,'link','identity','constant','off','estdisp','off');

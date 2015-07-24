@@ -155,19 +155,11 @@ for mat_used=1:num_matrices
             for i=1:length(tbins_center)
                 y(:,i)=nanmean(grand_psth.matrix{mat_used}(:,abs(t-tbins_center(i))<=tbins_semi_width),2);
             end
-    end
-    
-    switch noise_type
-        case 'normal'
-            y=(y-mean_center)/std_scale;
-    end
+    end    
     [temp]= make_GLM_and_contrasts_from_inst_firing(y,RF_surf(cell_no),surf_str,noise_type,mean_center,std_scale);
     results{mat_used}=temp; clear temp;
     results{mat_used}.time=tbins_center;
-    switch noise_type
-        case 'poisson'
-            y=(y-mean_center)/std_scale;
-    end
+            y=(y-mean_center)/std_scale;   
     results{mat_used}.y=y;
     results{mat_used}.mean_activity=mean_center;
     results{mat_used}.std_activity=std_scale;

@@ -3,11 +3,11 @@ clear all; close all
 %monkeys={'Quincy','Michel'}
 %for mm=1:length(monkey)
 %    for aa=1:length(area);
-area='LIP';%areas{aa};
-monkey='both';%'Quincy';%'both';%'Michel';%monkeys{mm};%'Quincy';
+area='PITd';%areas{aa};
+monkey='Quincy';%'Quincy';%'both';%'Michel';%monkeys{mm};%'Quincy';
 remake_GLMs=0;
-save_fig=1;
-use_highres_data=1; % TIME-CONSUMING!!!
+save_fig=0;
+use_highres_data=0; % TIME-CONSUMING!!!
 use_BRTs=1;
 use_BRTs_in_plot=0;
 
@@ -97,19 +97,19 @@ for mat_used=1:end_indx
 end
 
 make_common_plot=1;
-for_paper=1;
+for_paper=0;
 if make_common_plot
-%     contrasts_plotted={logical([1 1 0 0 0 0 1 0 0 1]);
-%         logical([0 0 0 0 1 0 1 1 0]);
-%         logical([0 0 0 0 0 0])};
-contrasts_plotted={logical([1 1 0 0 0 0 1 0 0 1]);
-                   logical([0 0 0 0 1 0 1 1 0 0 1]);
-                   logical([0 0 0 0 0 0])};
-               if ~for_paper
-                   h=plot_GLM_contrasts(norm_group,contrasts_plotted,use_BRTs_in_plot);
-               else
-                   h=plot_GLM_contrasts_for_paper(norm_group,contrasts_plotted,use_BRTs_in_plot);
-               end
+%     contrasts_plotted={logical([0 0 0 0 0 0 0 0 0 0]);
+%         logical([0 0 0 0 0 0 0 0 0]);
+%         logical([1 1 1 0 1 0 0 1 1 0 1 0 1 0 0 0])};
+    contrasts_plotted={logical([1 0 0 0]);
+        logical([0 1 0 0]);
+        logical([1 1 0 0 0 0 0 1 1 0 1 0 1 0 0 0])};
+    if ~for_paper
+        h=plot_GLM_contrasts(norm_group,contrasts_plotted,use_BRTs_in_plot);
+    else
+        h=plot_GLM_contrasts_for_paper(norm_group,contrasts_plotted,use_BRTs_in_plot);
+    end
     [axh,labelh]=suplabel([area '_' monkey],'t');
     set(labelh,'Interpreter','none');
     drawnow
