@@ -63,7 +63,13 @@ params=[3 3 1; %attn: GLM3,3rdcontrast,time_point1
         3 13 2; %saccade/attn inter
         3 1 1; %surface
         3 8 1; %surface/target inter
-        3 9 1]; %saccade/surface interaction     
+        3 9 1]; %saccade/surface interaction
+params_mgs=[1 2 1; %columnn 1, 2nd beta, only 1 time point (stim onset)
+            2 2 1; %columnd 2, 2nd beta, first time point (mem period)
+            2 2 2; %column 2, 2nd beta, second time point (presacc period)
+            3 2 1]; %column 3, 2nd beta, "time point 1" (actually is cross-time)
+            
+            
 param_names={'attention';
              'target';
              'attn/target inter';
@@ -79,8 +85,8 @@ param_names={'attention';
              'mgs saccade epoch';
              'mgs mem-sacc diff'};
 
-cell_ces=nan(size(cell_results_collection,1),size(params,1)+5);
-cell_sig=nan(size(cell_results_collection,1),size(params,1)+5);
+cell_ces=nan(size(cell_results_collection,1),size(params,1)+6);
+cell_sig=nan(size(cell_results_collection,1),size(params,1)+6);
 for cell_no=1:size(cell_results_collection,1)
     if ~isempty(cell_results_collection(cell_no,1).ces)
         for par_num=1:size(params,1)
@@ -92,12 +98,12 @@ for cell_no=1:size(cell_results_collection,1)
 
     end
     if ~isempty(cell_results_collection_mgs(cell_no,1).ces)
-        cell_ces(cell_no,par_num+3)=cell_results_collection_mgs(cell_no,1).ces;
-        cell_sig(cell_no,par_num+3)=cell_results_collection_mgs(cell_no,1).Fsig;
-        cell_ces(cell_no,par_num+[4:5])=cell_results_collection_mgs(cell_no,2).ces;
-        cell_sig(cell_no,par_num+[4:5])=cell_results_collection_mgs(cell_no,2).Fsig;
-        cell_ces(cell_no,par_num+6)=cell_results_collection_mgs(cell_no,3).ces;
-        cell_sig(cell_no,par_num+6)=cell_results_collection_mgs(cell_no,3).Fsig;
+        cell_ces(cell_no,par_num+3)=cell_results_collection_mgs(cell_no,params_mgs(1,1)).ces(params_mgs(1,2),params_mgs(1,3));
+        cell_sig(cell_no,par_num+3)=cell_results_collection_mgs(cell_no,params_mgs(1,1)).Fsig(params_mgs(1,2),params_mgs(1,3));;
+        cell_ces(cell_no,par_num+[4:5])=cell_results_collection_mgs(cell_no,params_mgs(2,1)).ces(params_mgs(2,2),params_mgs(2:3,3));
+        cell_sig(cell_no,par_num+[4:5])=cell_results_collection_mgs(cell_no,params_mgs(2,1)).Fsig(params_mgs(2,2),params_mgs(2:3,3));
+        cell_ces(cell_no,par_num+6)=cell_results_collection_mgs(cell_no,params_mgs(4,1)).ces(params_mgs(4,2),params_mgs(4,3));
+        cell_sig(cell_no,par_num+6)=cell_results_collection_mgs(cell_no,params_mgs(4,1)).Fsig(params_mgs(4,2),params_mgs(4,3));
     end
 end
 %sendmail('9178422510@txt.att.net', 'Function analyses report', 'Loop completed');

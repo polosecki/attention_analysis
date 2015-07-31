@@ -133,14 +133,16 @@ for used_mat=1:3
     results.GLM(used_mat).dof=zeros(size(X,2),size(y,2));
     rx=rank(X);
     disp(['GLM(' num2str(used_mat) ')'])
+    
+    estpdisp='on';
     for i=1:size(y,2)
            disp(['GLM(' num2str(used_mat) ') ' num2str(i)])
         temp_y=y(:,i);
         tt=trials_used{used_mat} & ~isnan(temp_y);
         if rank(X(tt,:))<rx
             continue
-        end
-        [b,dev,stats] = glmfit(X(tt,:),temp_y(tt),noise_type,'link','identity','constant','off','estdisp','off');
+        end   
+        [b,dev,stats] = glmfit(X(tt,:),temp_y(tt),noise_type,'link','identity','constant','off','estdisp',estpdisp);
         results.GLM(used_mat).ces_std(:,i)=stats.se/std_scale;
         results.GLM(used_mat).t(:,i)=stats.t;
         results.GLM(used_mat).Fsig(:,i)=stats.p;

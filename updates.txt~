@@ -1,3 +1,1 @@
--Changed make_GLM_fun to correct scaling data twice to std
--save_many_GLMs.m incorporates noise_model 'poisson'
-
+-make_GLM_and_contrasts_from_inst_firing.m icporporates estdisp paramteter that estimates the dispersion for poisson noise.

@@ -82,7 +82,7 @@ for raw_cell_no=1:length(attention_long_enough)
             
             
         end
-        t_split_attn=test_t(timing_indx)
+        t_split_attn=test_t(timing_indx);
         
         if isempty(is_attn_long_enough);is_attn_long_enough=true;end
         attention_long_enough(raw_cell_no)=is_attn_long_enough;
@@ -115,7 +115,7 @@ for raw_cell_no=1:length(attention_long_enough)
             %length(test_sig)-find(diff(test_sig>p_thres),1,'last')
             if timing_indx~=length(test_t)
                 timing_indx=timing_indx+1;
-                t_split_sacc=test_t(timing_indx)
+                t_split_sacc=test_t(timing_indx);
             else
                 t_split_sacc=t0;
                 

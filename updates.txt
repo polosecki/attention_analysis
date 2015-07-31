@@ -1,3 +1,1 @@
--collect_cell_stats incorporates noise_model as an input parameter
--calculate_stats_from_cell_list.m updated to incorporate changes to GLM
--measure_timing_of_effects_fun also incpororates changes to GLM
+-make_GLM_and_contrasts_from_inst_firing.m icporporates estdisp paramteter that estimates the dispersion for poisson noise.
