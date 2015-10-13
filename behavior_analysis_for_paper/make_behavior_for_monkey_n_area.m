@@ -2,7 +2,7 @@ clear all
 
 monkeys = {'Quincy','Michel'};
 areas = {'PITd','LIP'};
-
+make_consitency_data=true;
 for mm=1:2
     for aa=1:2
         monkey = monkeys{mm};%'Michel';
@@ -21,7 +21,7 @@ for mm=1:2
                     included_sessions=[included_sessions;cell_str(cell_no).dir];
                     current_session_index=find(strcmp(cell_str(cell_no).dir,included_sessions));
                     behavior_performance(current_session_index) = ...
-                        compute_discrimination_detection_behav(monkey,area,cell_no);
+                        compute_discrimination_detection_behav(monkey,area,cell_no,make_consitency_data);
                 end
             end
         end

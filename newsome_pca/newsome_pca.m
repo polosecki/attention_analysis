@@ -1,6 +1,6 @@
 close all; clear all
-monkey='Quincy';%'both';%
-area='PITd';
+monkey='both';%'both';%
+area='LIP';
 
 %align=1; %1:align to surf onset; 2:align to saccade onset
 cell_file_dir='/Freiwald/ppolosecki/lspace/polo_preliminary/cell_file_manager';
@@ -82,10 +82,14 @@ end
 %SLIGHTLY.
 
 max_align=3;
+use_single_effects_for_pca=true;
 for align=1:max_align
-pca_input_matrix=reshape(dpca_input{align}.matrix,[size(dpca_input{align}.matrix,1) size(dpca_input{align}.matrix,2)*16])';
-
-
+    if use_single_effects_for_pca
+        pca_input_matrix=reshape(dpca_input{align}.matrix(:,:,1:2,1:2),[size(dpca_input{align}.matrix,1) size(dpca_input{align}.matrix,2)*4])';
+    else
+        pca_input_matrix=reshape(dpca_input{align}.matrix,[size(dpca_input{align}.matrix,1) size(dpca_input{align}.matrix,2)*16])';
+    end
+    
 % [coeff,score,latent,tsquared,explained,mu] = pca(X,Name,Value)
 %coeff: says the pca coefficients
 %score: each column of score represents one principal component
@@ -102,7 +106,7 @@ pca_elements(align).explained=explained;
 pca_elements(align).mu=mu;
 end
 %How to reconstruct the d_PCA matrix using nPCAs_used PCs:
-nPCAs_used=5;
+nPCAs_used=12;
 align=2;
 X = pca_elements(align).score(:,1:nPCAs_used)*pca_elements(align).coeff(:,1:nPCAs_used)';
 
@@ -119,47 +123,48 @@ title(['De-noised data using ' num2str(nPCAs_used) ' PCs'])
 t_boundaries={[-.5 1.5],[-1.5 0],[-.4 .4]}; % boundaries for each alignment
 if ~exist('betas_population','var')
     for align=1:max_align
-betas_population{align}.matrix=zeros(sum(good_files),size(dpca_input{align}.matrix,2),4);
-betas_population{align}.time_axis=dpca_input{align}.time_axis;
+        betas_population{align}.matrix=zeros(sum(good_files),size(dpca_input{align}.matrix,2),4);
+        betas_population{align}.time_axis=dpca_input{align}.time_axis;
     end
-
-for cell_no=1:length(cell_str)
-%cell_no=23%19
-    if good_files(cell_no)
-        i1=cumsum(good_files);
-        disp(['Cell number: ' num2str(i1(cell_no)) ' out of ' num2str(max(i1))])
-        [results]=make_GLM_fun(cell_no,monkey,area,'betas_for_pca',1);
-        %close(gcf)
-        for align=1:max_align
-            t_start=t_boundaries{align}(1); %in secs, counting from t_zero (surf onset or saccade onset)
-            t_end=t_boundaries{align}(2);
-            % 3 is the analysis number for raw beta values.
-            temp=results{align}.GLM(3).ces;
-            t=results{align}.time;
-            try_single_effects=true;
-            if try_single_effects
-                temp(3,:)=results{align}.GLM(2).ces(8,:);
-                %temp(5,:)=results{align}.GLM(2).ces(5,:);
-                temp(5,:)=2*results{align}.GLM(2).ces(10,:)-results{align}.GLM(2).ces(5,:);
-            end
-            [~,index_start]=min(abs((t-t_start)));
-            if cell_no==find(good_files,1)
+    
+    for cell_no=1:length(cell_str)
+        %cell_no=23%19
+        if good_files(cell_no)
+            i1=cumsum(good_files);
+            disp(['Cell number: ' num2str(i1(cell_no)) ' out of ' num2str(max(i1))])
+            [results]=make_GLM_fun(cell_no,monkey,area,'betas_for_pca',1);
+            %close(gcf)
+            for align=1:max_align
+                t_start=t_boundaries{align}(1); %in secs, counting from t_zero (surf onset or saccade onset)
+                t_end=t_boundaries{align}(2);
+                % 3 is the analysis number for raw beta values.
+                temp=results{align}.GLM(3).ces;
+                t=results{align}.time;
+                try_single_effects=true;
+                if try_single_effects
+                    %                temp(3,:)=results{align}.GLM(2).ces(8,:);
+                    temp(3,:)=results{align}.GLM(1).ces(1,:);
+                    %                temp(5,:)=2*results{align}.GLM(2).ces(10,:)-results{align}.GLM(2).ces(5,:);
+                    temp(5,:)=results{align}.GLM(2).ces(2,:);
+                end
+                [~,index_start]=min(abs((t-t_start)));
+                if cell_no==find(good_files,1)
+                    %[~,index_end]=min(abs((t-t_end)));
+                    index_duration(align)=round(diff(t_boundaries{align})/mode(diff(t)));
+                    %else
+                    %   index_end=index_start+index_duration(align);
+                end
+                index_end=index_start+index_duration(align);
                 %[~,index_end]=min(abs((t-t_end)));
-                index_duration(align)=round(diff(t_boundaries{align})/mode(diff(t)));
-            %else
-             %   index_end=index_start+index_duration(align);
+                temp=temp([3 5 1 2],index_start:index_end);%i. e.: attention,sacade,surface,target, in that order
+                %figure; plot(t(index_start:index_end),temp');
+                
+                betas_population{align}.matrix(i1(cell_no),:,:)=temp';
             end
-               index_end=index_start+index_duration(align);
-            %[~,index_end]=min(abs((t-t_end)));
-            temp=temp([3 5 1 2],index_start:index_end);%i. e.: attention,sacade,surface,target, in that order
-            %figure; plot(t(index_start:index_end),temp');
-
-            betas_population{align}.matrix(i1(cell_no),:,:)=temp';
         end
     end
-end
-save([area '_' monkey '_betas.mat'],'betas_population')
-
+    save([area '_' monkey '_betas.mat'],'betas_population')
+    
 end
 %% Denoise betas and calculate directions in PCA space:
 
@@ -213,7 +218,7 @@ plot_nums={{[1 2 3 4];[1 2 3 4]},{[1 3];[1 3]},{[1 2 3 4];[1 3]},{[1 3];[1 2 3 4
 
 %f=figure; 
 %set(f,'Position',get(0,'ScreenSize'));
-save_figure=0;
+save_figure=1;
 
 for pp=1:length(plot_nums)
 %subplot(2,2,pp); hold on

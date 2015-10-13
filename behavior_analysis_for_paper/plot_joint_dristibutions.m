@@ -1,7 +1,7 @@
 close all; clear all
 monkeys = {'Quincy','Michel'};
 areas = {'PITd','LIP'};
-save_fig = true;
+save_fig = false;true;
 
 
 addpath('..')

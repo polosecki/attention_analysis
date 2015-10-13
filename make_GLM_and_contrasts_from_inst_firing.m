@@ -5,10 +5,10 @@ do_anovan=0;
 RF_surf_index=find(unique([surf_str.phi])'==closest_surf_phi);
 
 locations=circshift(unique([surf_str.phi])',-RF_surf_index+1);%RF_centered; for computation purposes
-non_shifted_locations=unique([surf_str.phi])'; %For nomenclature purposes
+%non_shifted_locations=unique([surf_str.phi])'; %For nomenclature purposes
 
 locations=reshape(locations,2,2); %rows indicate physical conditions
-non_shifted_locations=reshape(non_shifted_locations,2,2);
+%non_shifted_locations=reshape(non_shifted_locations,2,2);
 phys_surf=2*ismember([surf_str.phi]',locations(1,:))-1;
 phys_targ=2*ismember([surf_str.brt]',locations(1,:))-1;
 
@@ -18,8 +18,8 @@ attend1(ismember([surf_str.phi]',locations(1,2)))=-1;
 attend2=zeros(size(phys_targ)); attend2(ismember([surf_str.phi]',locations(2,1)))=1;
 attend2(ismember([surf_str.phi]',locations(2,2)))=-1;
 
-attend=[surf_str.phi];
-saccade=[surf_str.brt]';
+%attend=[surf_str.phi];
+%saccade=[surf_str.brt]';
 
 saccad1=zeros(size(phys_targ)); saccad1(ismember([surf_str.brt]',locations(1,1)))=1;
 saccad1(ismember([surf_str.brt]',locations(1,2)))=-1;

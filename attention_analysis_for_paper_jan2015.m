@@ -1,10 +1,10 @@
 close all; clear all
 
 monkey='Quincy';
-area='LIP';
-cell_no=35;
+area='PITd';
+cell_no=29;
     RF_pos.rho=8;
-    RF_pos.phi=227.4;
+    RF_pos.phi=135;%227.4;
 figure_dir='/Freiwald/ppolosecki/harbor';%[];
 
 overwrite_grand_psth=false;
@@ -29,6 +29,7 @@ save_figures=~isempty(figure_dir);
 
 
 psth_mode='use_single_trials';%DO NOT CHANGE %'borisov_mean';% 'borisov_sem';
+ v=version('-release');
 
 
 psthfilter.type = 'Gauss';
@@ -282,9 +283,14 @@ for j=1:length(conditions_plotted)
         lg=legend(linehandles{subplot_row,align,fig_in_use},legend_values(1:color_plotted),'Location','NorthWest');
         set(lg,'FontSize',5.5,'Box','off')
         set(lg,'units','pixels');
-        lp=get(lg,'outerposition');
+                if str2num(v(1:end-1))<2015
+            pos_prop='outerposition';
+        else
+    pos_prop='position';
+end
+        lp=get(lg,pos_prop);
         new_width=20; new_height=35;
-        set(lg,'outerposition',[lp(1),lp(2)+0.9*(lp(4)-new_height),new_width,new_height]);
+        set(lg,pos_prop,[lp(1),lp(2)+0.9*(lp(4)-new_height),new_width,new_height]);
         
         
         
@@ -349,8 +355,8 @@ for i=1:length(Main_effects)
                 lg=legend(linehandles{align},legend_values,'Location','SouthWest');
                 set(lg,'Box','off')
                 set(lg,'units','pixels');
-                lp=get(lg,'outerposition');
-                set(lg,'outerposition',[lp(1:2),30,lp(4)]);
+                lp=get(lg,pos_prop);
+                set(lg,pos_prop,[lp(1:2),30,lp(4)]);
             end
             
         end
@@ -425,9 +431,9 @@ for surf_cond=1:2
             lg=legend(linehandles,legendtexts,'Location','NorthWest');
             set(lg,'FontSize',7,'Box','off')
             set(lg,'units','pixels');
-            lp=get(lg,'outerposition');
+            lp=get(lg,pos_prop);
             new_width=20; new_height=35;
-            set(lg,'outerposition',[lp(1),lp(2)+0.9*(lp(4)-new_height),new_width,new_height]);
+            set(lg,pos_prop,[lp(1),lp(2)+0.9*(lp(4)-new_height),new_width,new_height]);
             
             
         end
@@ -460,7 +466,7 @@ close all
 
 align=2;
 font_size_used=15;
-max_y=40;
+max_y=120;
 
 for align=1:2
 f(align)=figure;
@@ -516,8 +522,11 @@ for i=1:3
 pbaspect([1 1 1])
 ylim([0 max_y])
 line([0 0], ylim, 'Color', 'k', 'LineStyle', '--')
-set(gca,'ytick',[0 max_y/2 max_y])
-set(gca,'yticklabel',[0 max_y/2 max_y])
+max_y2=100;
+set(gca,'ytick',[0 max_y2/2 max_y2])
+set(gca,'yticklabel',[0 max_y2/2 max_y2])
+%set(gca,'ytick',[0 max_y/2 max_y])
+%set(gca,'yticklabel',[0 max_y/2 max_y])
 if align==1
 set(gca,'xtick',-.5:.5:max(xlim))
     xlabel('Time from stimulus onset (s)')

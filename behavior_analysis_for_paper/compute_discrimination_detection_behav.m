@@ -1,8 +1,10 @@
-function [results] = compute_discrimination_detection_behav(monkey,area,cell_no)
+function [results] = compute_discrimination_detection_behav(monkey,area,cell_no,consistency_anal)
 %monkey='Quincy';%'Michel';%
 %area='PITd';
 %cell_no=29;
-
+if nargin<4
+    consistency_anal=false;
+end
 [surf_str, surf_str_extra, td] = get_behavioral_data(monkey,area,cell_no);
 
 outcomes={surf_str.out}';
@@ -86,6 +88,17 @@ distractor_discrim_behavior = (nbrt_dir ~= sacc_dir) & trials_distractor_discrim
 p_val_discrimination_dist = binomialcdf(sum(distractor_discrim_behavior),sum(trials_distractor_discrim),0.5)
 percent_distractor_discriminated = (1-sum(distractor_discrim_behavior)/sum(trials_distractor_discrim)) * 100
 
+%% Analysis separated by consistency
+if consistency_anal
+    [success, chance, confidence, p_val]=consistency_metric_from_raw_data(RT_absolute(used_trials),BRT_time(used_trials)+k,nBRT_time(used_trials)+k,sacc_dir(used_trials),brt_dir(used_trials),nbrt_dir(used_trials),n_perms);
+end
+
+
+
+
+
+
+%% Store output in results struct:
 results.performance.detection_target=percent_target_detected;
 results.performance.detection_distractor=percent_dist_detected;
 results.performance.discrimination_target=percent_target_discriminated;
@@ -104,3 +117,8 @@ results.sig.detection_target=p_val_detection_target;
 results.sig.detection_distractor=p_val_detection_distractor;
 results.sig.discrimination_target=p_val_discrimination_target;
 results.sig.discrimination_distractor=p_val_discrimination_dist;
+
+results.consistency.success=success;
+results.consistency.chance=chance;
+results.consistency.confidence=confidence;
+results.consistency.p_val=p_val;

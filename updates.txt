@@ -1,1 +1,1 @@
--make_GLM_and_contrasts_from_inst_firing.m icporporates estdisp paramteter that estimates the dispersion for poisson noise.
+-newsome_pca uses just single-stimuli conditions for construction of PCA and from new GLM analysis ofr computing the axes

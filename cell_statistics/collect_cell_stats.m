@@ -3,7 +3,7 @@ monkey={'Quincy','Michel'};
 area={'PITd','LIP'};
 
 use_high_res_data=1;
-redo_stats=1;
+redo_stats=0;
 use_mean_firing=0;
 remove_mgs_saccade_epoch=1; %This might be desirable, since we already have its difference with mem epoch as a variable 
 save_figures_to_harbor=0;
@@ -466,7 +466,7 @@ end
 %% PLOT PCA components
 figure;
 hold all
-pcx=3;
+pcx=1;
 pcy=2;
 %pcz=3;
 colors={'blue','red'};
@@ -498,11 +498,12 @@ for aa=1:2
 end
 
 %f=figure;
+xlim_used=[-3 4.5];
 logical_vals=[true;false];
 contrasts_plotted=[10;12];%[7;8];
 num_histnorm_cols=15;
-monkey_used=2;
-mult_compare_method='fdr';'none';'fdr';'holm-bonferroni';'none';'bonferroni';
+monkey_used=3;
+mult_compare_method='fdr';%'fdr';'holm-bonferroni';'bonferroni';
 p_threshold=0.05;
 
 if monkey_used==1
@@ -552,36 +553,49 @@ for num_area=1:2
         counts=nan(length(logical_vals),length(edges));
         for i=1:length(logical_vals)
             n = histc(pca_input_matrix(sig_vector==logical_vals(i) & is_pitd==logical_vals(num_area) & monkey_vector,par_num),edges);
-            counts(i,:)=n;%/sum(n);
+            counts(i,:)=n;
         end
-        
+        n_cells=sum(counts(:));        
+        counts=counts/n_cells*100;
         h=bar(edges,counts','stacked');
+
         %colormap(cmap)
         this_cmap=colormap;
         this_cmap(1,:)=bar_colors(num_area, :);
         colormap(this_cmap); %freezeColors;
+        v=version('-release');
         for i=1:length(h)
-            set(get(h(i),'Children'),'EdgeColor',bar_colors(num_area, :))
-            %set(get(h(i),'Children'),'FaceColor',bar_colors(num_row, :))
+            if str2num(v(1:end-1))>=2015
+                set(h(i),'EdgeColor',bar_colors(num_area, :))
+            else
+                set(get(h(i),'Children'),'EdgeColor',bar_colors(num_area, :))
+                %set(get(h(i),'Children'),'FaceColor',bar_colors(num_row, :))
+            end
         end
-        xlim([-.6 1])
+        xlim(xlim_used)
         pbaspect([172 142 1])
-        line([0 0],ylim,'Color','black','LineStyle','--');
         box off
-        title(sprintf('%01.2g%% of%3.0f cells are significant in %s',100*sum(counts(1,:))/sum(counts(:)),sum(counts(:)),monkey_names{monkey_used}))
+        title(sprintf('%01.2g%% of%3.0f cells are significant in %s',sum(counts(1,:)),n_cells,monkey_names{monkey_used}))
+        if max(get(gca,'ytick'))==10
+            set(gca,'ytick',[0 5 10])
+        elseif max(get(gca,'ytick'))==20
+            set(gca,'ytick',[0 10 20])
+        end
+        line([0 0],ylim,'Color','black','LineStyle','--');
         
     end
 end
 
-%for i=1:4;
-%    subplot(2,2,i); unfreezeColors;
-%end
+save_figures_to_harbor=true;
+if save_figures_to_harbor
+    for i=1:length(f)
+    filename=['MGS_stats_' area{i} '_' monkey_names{monkey_used}];
+    %plot2svg(fullfile(figure_dir,[filename '.svg']),f(i));
+    saveas(f(i),fullfile(figure_dir,filename),'fig');
+    saveas(f(i),fullfile(figure_dir,filename),'epsc');
+    end
+end
 
-% if save_figures_to_harbor
-% filename=['MGS_stats_' monkey_names{monkey_used}];
-% plot2svg(fullfile(figure_dir,[filename '.svg']),f);
-% %saveas(f,fullfile(figure_dir,filename),'fig');
-% end
 %% Make nice histograms in both monkeys
 contrasts_plotted=[1 4 5 6 2 3 8 7];
 %contrasts_plotted=1:8;
@@ -599,7 +613,7 @@ end
 monkey_names={'Quincy','Michel','Both monkeys'};
 bar_colors(1, :) = [255 0 0]/255; %(darker) red
 bar_colors(2, :) = [0 0 128]/255; %navy/dark blue
-mult_compare_method='fdr';'none';'bonferroni';
+mult_compare_method='fdr';%'holm-bonferroni';%'fdr';%'none';%'fdr';%'holm-bonferroni';%'bonferroni';%'bonferroni';'fdr';'none';
 p_threshold=0.05;
 sig_matrix=[];
 for aa=1:2
@@ -671,7 +685,7 @@ for num_area=1:2
     end
 end
 
-save_figures_to_harbor=true;
+save_figures_to_harbor=false;
 if save_figures_to_harbor
     for i=1:length(f)
     filename=['Attn_stats_' area{i} '_' monkey_names{monkey_used}];

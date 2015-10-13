@@ -60,7 +60,7 @@ elseif plot_params.align==2
     line([0 0], ylim, 'Color', 'k', 'LineStyle', '--')
     end
     %Make xlim a reasonable range: (2 sec before saccade until 0.5 sec after saccade)
-    xlim_used=[-0.8 0.025];
+    xlim_used=[-0.6 0.025];
 elseif plot_params.align==3
     if plot_lines
     line([0 0], ylim, 'Color', 'k', 'LineStyle', '--') 

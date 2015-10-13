@@ -1,12 +1,13 @@
 clc; close all; clear all
 
 
-monkey='Quincy';
+monkey='Michel';
 area='PITd';
 
 max_align=3; %set to 3 if BRT aligned stuff exists %1:align to surf onset; 2:align to saccade onset
 cell_file_dir='/Freiwald/ppolosecki/lspace/polo_preliminary/cell_file_manager';
 base_dir='/Freiwald/ppolosecki/lspace';
+substract_mean=false;
 
 cell_file=fullfile(cell_file_dir,[area '_' monkey '.mat']);
 results_file=fullfile(cell_file_dir,[area '_' monkey '_results.mat']);
@@ -110,7 +111,11 @@ for cell_no=1:length(cell_str)
             
             %Z-score the mean matrix
             %flattened_grand_mean=grand_psth.matrix{align}(this_trials,index_start:index_end);
-            mm=nanmean(mean_mat(:));
+            if substract_mean
+                mm=nanmean(mean_mat(:));
+            else
+                mm=0;
+            end
             mstd=nanstd(mean_mat(:));
             mean_mat=(mean_mat-mm)/mstd;
             % Make multidimensional matrix for dPCA
@@ -153,7 +158,12 @@ end
 dpca_input{1}.matrix=temp1;
 dpca_input{2}.matrix=temp2;
 dpca_input{3}.matrix=temp3;
-save([area '_' monkey '_dpca_input'],'dpca_input');
+if substract_mean
+    sm_st='';
+else
+    sm_st='_with_mean';
+end
+save([area '_' monkey '_dpca_input' sm_st],'dpca_input');
 
 %% Usa dPCA to find dimension that maximally explains variance accross exp conditions
 
